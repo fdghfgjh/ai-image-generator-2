@@ -3,91 +3,311 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
+
+type Language = 'en' | 'ru';
+
+const translations = {
+  en: {
+    nav: {
+      features: "Features",
+      pricing: "Pricing",
+      faq: "FAQ",
+      signIn: "Sign In"
+    },
+    hero: {
+      title: "AI Creator",
+      subtitle: "AI-powered Image & 3D Model Generation for 3D Printing",
+      createNow: "Create Now",
+      signIn: "Sign In",
+      stats: {
+        images: "Images Created",
+        models: "3D Models",
+        users: "Active Users",
+        support: "Support"
+      }
+    },
+    features: {
+      title: "Powerful",
+      titleAccent: "Features",
+      items: [
+        {
+          title: "AI Image Generation",
+          description: "Create stunning images from text prompts using advanced AI models"
+        },
+        {
+          title: "3D Model Generation",
+          description: "Generate 3D-printable models ready for manufacturing"
+        },
+        {
+          title: "Browser Preview",
+          description: "View and rotate your 3D models directly in the browser"
+        }
+      ]
+    },
+    formats: {
+      title: "Export",
+      titleAccent: "Formats",
+      models: "3D Models",
+      images: "Images"
+    },
+    coins: {
+      title: "Coin",
+      titleAccent: "System",
+      howItWorks: "How it works",
+      points: [
+        "Purchase coins via credit card or cryptocurrency",
+        "Each generation costs coins based on complexity",
+        "Download generated content anytime",
+        "Unused coins never expire"
+      ],
+      costTitle: "Cost per generation",
+      costs: {
+        simple: "Simple Image",
+        hd: "HD Image",
+        basic: "Basic 3D Model",
+        complex: "Complex 3D Model"
+      }
+    },
+    pricing: {
+      title: "Choose Your",
+      titleAccent: "Plan",
+      mostPopular: "Most Popular",
+      perMonth: "/month",
+      coins: "coins",
+      getStarted: "Get Started",
+      plans: [
+        {
+          name: "Free Trial",
+          features: ["Basic image generation", "Standard quality", "5 generations/day"]
+        },
+        {
+          name: "Basic",
+          features: ["HD image generation", "3D model generation", "Unlimited generations", "Priority support"]
+        },
+        {
+          name: "Professional",
+          features: ["4K image generation", "Advanced 3D models", "Commercial license", "API access", "24/7 support"]
+        }
+      ]
+    },
+    testimonials: {
+      title: "What",
+      titleAccent: "Users",
+      titleEnd: "Say",
+      items: [
+        {
+          name: "Sarah Johnson",
+          role: "Product Designer",
+          content: "This platform revolutionized my workflow. Creating prototypes is now 10x faster!"
+        },
+        {
+          name: "Michael Chen",
+          role: "3D Artist",
+          content: "The quality of 3D models is exceptional. Perfect for rapid prototyping."
+        },
+        {
+          name: "Emma Davis",
+          role: "Marketing Director",
+          content: "We generate hundreds of unique visuals monthly. Game-changer for our campaigns."
+        }
+      ]
+    },
+    faq: {
+      title: "FAQ",
+      items: [
+        {
+          question: "How does the coin system work?",
+          answer: "Each generation costs coins based on complexity. Images cost 5-20 coins, 3D models cost 50-100 coins. You can purchase coins via card or cryptocurrency."
+        },
+        {
+          question: "Can I use generated content commercially?",
+          answer: "Yes! Professional plan includes full commercial license for all generated content."
+        },
+        {
+          question: "What AI models do you use?",
+          answer: "We use cutting-edge models including Stable Diffusion, DALL-E, and custom 3D generation algorithms."
+        },
+        {
+          question: "How long does generation take?",
+          answer: "Images: 10-30 seconds. 3D models: 2-5 minutes depending on complexity."
+        }
+      ]
+    },
+    footer: {
+      description: "Next-generation AI platform for image and 3D model generation.",
+      product: "Product",
+      legal: "Legal",
+      contact: "Contact",
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+      cookies: "Cookie Policy",
+      copyright: "© 2024 AI Creator. All rights reserved."
+    }
+  },
+  ru: {
+    nav: {
+      features: "Возможности",
+      pricing: "Тарифы",
+      faq: "FAQ",
+      signIn: "Войти"
+    },
+    hero: {
+      title: "AI Creator",
+      subtitle: "AI-генерация картинок и 3D-моделей для 3D-печати",
+      createNow: "Создать",
+      signIn: "Войти",
+      stats: {
+        images: "Изображений создано",
+        models: "3D-моделей",
+        users: "Активных пользователей",
+        support: "Поддержка"
+      }
+    },
+    features: {
+      title: "Мощные",
+      titleAccent: "возможности",
+      items: [
+        {
+          title: "Генерация изображений",
+          description: "Создавайте потрясающие изображения из текстовых запросов с помощью продвинутых AI-моделей"
+        },
+        {
+          title: "Генерация 3D-моделей",
+          description: "Генерируйте 3D-модели готовые для печати и производства"
+        },
+        {
+          title: "Предпросмотр в браузере",
+          description: "Просматривайте и вращайте ваши 3D-модели прямо в браузере"
+        }
+      ]
+    },
+    formats: {
+      title: "Форматы",
+      titleAccent: "экспорта",
+      models: "3D-модели",
+      images: "Изображения"
+    },
+    coins: {
+      title: "Система",
+      titleAccent: "коинов",
+      howItWorks: "Как это работает",
+      points: [
+        "Покупайте коины картой или криптовалютой",
+        "Каждая генерация стоит коины в зависимости от сложности",
+        "Скачивайте созданный контент в любое время",
+        "Неиспользованные коины не сгорают"
+      ],
+      costTitle: "Стоимость генерации",
+      costs: {
+        simple: "Простое изображение",
+        hd: "HD изображение",
+        basic: "Базовая 3D-модель",
+        complex: "Сложная 3D-модель"
+      }
+    },
+    pricing: {
+      title: "Выберите",
+      titleAccent: "тариф",
+      mostPopular: "Популярный",
+      perMonth: "/месяц",
+      coins: "коинов",
+      getStarted: "Начать",
+      plans: [
+        {
+          name: "Бесплатный тест",
+          features: ["Базовая генерация изображений", "Стандартное качество", "5 генераций в день"]
+        },
+        {
+          name: "Базовый",
+          features: ["HD генерация изображений", "Генерация 3D-моделей", "Безлимитные генерации", "Приоритетная поддержка"]
+        },
+        {
+          name: "Профессиональный",
+          features: ["4K генерация изображений", "Продвинутые 3D-модели", "Коммерческая лицензия", "Доступ к API", "Поддержка 24/7"]
+        }
+      ]
+    },
+    testimonials: {
+      title: "Что говорят",
+      titleAccent: "пользователи",
+      titleEnd: "",
+      items: [
+        {
+          name: "Сара Джонсон",
+          role: "Продуктовый дизайнер",
+          content: "Эта платформа революционизировала мой рабочий процесс. Создание прототипов теперь в 10 раз быстрее!"
+        },
+        {
+          name: "Майкл Чен",
+          role: "3D-художник",
+          content: "Качество 3D-моделей исключительное. Идеально для быстрого прототипирования."
+        },
+        {
+          name: "Эмма Дэвис",
+          role: "Директор по маркетингу",
+          content: "Мы создаём сотни уникальных визуалов ежемесячно. Это меняет правила игры для наших кампаний."
+        }
+      ]
+    },
+    faq: {
+      title: "FAQ",
+      items: [
+        {
+          question: "Как работает система коинов?",
+          answer: "Каждая генерация стоит коины в зависимости от сложности. Изображения стоят 5-20 коинов, 3D-модели 50-100 коинов. Вы можете купить коины картой или криптовалютой."
+        },
+        {
+          question: "Могу ли я использовать созданный контент коммерчески?",
+          answer: "Да! Профессиональный тариф включает полную коммерческую лицензию на весь созданный контент."
+        },
+        {
+          question: "Какие AI-модели вы используете?",
+          answer: "Мы используем передовые модели, включая Stable Diffusion, DALL-E и кастомные алгоритмы для генерации 3D."
+        },
+        {
+          question: "Сколько времени занимает генерация?",
+          answer: "Изображения: 10-30 секунд. 3D-модели: 2-5 минут в зависимости от сложности."
+        }
+      ]
+    },
+    footer: {
+      description: "AI-платформа нового поколения для генерации изображений и 3D-моделей.",
+      product: "Продукт",
+      legal: "Правовая информация",
+      contact: "Контакты",
+      privacy: "Политика конфиденциальности",
+      terms: "Пользовательское соглашение",
+      cookies: "Политика cookies",
+      copyright: "© 2024 AI Creator. Все права защищены."
+    }
+  }
+};
 
 export default function Index() {
+  const [lang, setLang] = useState<Language>('en');
+  const t = translations[lang];
   const features = [
-    {
-      icon: "ImagePlus",
-      title: "AI Image Generation",
-      description: "Create stunning images from text prompts using advanced AI models",
-    },
-    {
-      icon: "Box",
-      title: "3D Model Generation",
-      description: "Generate 3D-printable models ready for manufacturing",
-    },
-    {
-      icon: "Eye",
-      title: "Browser Preview",
-      description: "View and rotate your 3D models directly in the browser",
-    },
+    { icon: "ImagePlus" },
+    { icon: "Box" },
+    { icon: "Eye" },
   ];
 
   const formats = [
-    { type: "3D Models", items: ["STL", "OBJ", "3MF", "STEP"] },
-    { type: "Images", items: ["PNG", "JPG", "WEBP"] },
+    { items: ["STL", "OBJ", "3MF", "STEP"] },
+    { items: ["PNG", "JPG", "WEBP"] },
   ];
 
   const plans = [
-    {
-      name: "Free Trial",
-      price: "0",
-      coins: "100",
-      features: ["Basic image generation", "Standard quality", "5 generations/day"],
-    },
-    {
-      name: "Basic",
-      price: "29",
-      coins: "1,000",
-      features: ["HD image generation", "3D model generation", "Unlimited generations", "Priority support"],
-      popular: true,
-    },
-    {
-      name: "Professional",
-      price: "99",
-      coins: "5,000",
-      features: ["4K image generation", "Advanced 3D models", "Commercial license", "API access", "24/7 support"],
-    },
+    { price: "0", coins: "100", popular: false },
+    { price: "29", coins: "1,000", popular: true },
+    { price: "99", coins: "5,000", popular: false },
   ];
 
   const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Product Designer",
-      content: "This platform revolutionized my workflow. Creating prototypes is now 10x faster!",
-      avatar: "S",
-    },
-    {
-      name: "Michael Chen",
-      role: "3D Artist",
-      content: "The quality of 3D models is exceptional. Perfect for rapid prototyping.",
-      avatar: "M",
-    },
-    {
-      name: "Emma Davis",
-      role: "Marketing Director",
-      content: "We generate hundreds of unique visuals monthly. Game-changer for our campaigns.",
-      avatar: "E",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "How does the coin system work?",
-      answer: "Each generation costs coins based on complexity. Images cost 5-20 coins, 3D models cost 50-100 coins. You can purchase coins via card or cryptocurrency.",
-    },
-    {
-      question: "Can I use generated content commercially?",
-      answer: "Yes! Professional plan includes full commercial license for all generated content.",
-    },
-    {
-      question: "What AI models do you use?",
-      answer: "We use cutting-edge models including Stable Diffusion, DALL-E, and custom 3D generation algorithms.",
-    },
-    {
-      question: "How long does generation take?",
-      answer: "Images: 10-30 seconds. 3D models: 2-5 minutes depending on complexity.",
-    },
+    { avatar: "S" },
+    { avatar: "M" },
+    { avatar: "E" },
   ];
 
   return (
@@ -96,14 +316,23 @@ export default function Index() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg"></div>
-            <span className="text-xl font-bold">AI Creator</span>
+            <span className="text-xl font-bold">{t.hero.title}</span>
           </div>
-          <nav className="hidden md:flex gap-6">
-            <a href="#features" className="hover:text-primary transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-primary transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-primary transition-colors">FAQ</a>
+          <nav className="hidden md:flex gap-6 items-center">
+            <a href="#features" className="hover:text-primary transition-colors">{t.nav.features}</a>
+            <a href="#pricing" className="hover:text-primary transition-colors">{t.nav.pricing}</a>
+            <a href="#faq" className="hover:text-primary transition-colors">{t.nav.faq}</a>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setLang(lang === 'en' ? 'ru' : 'en')}
+              className="ml-2"
+            >
+              <Icon name="Languages" size={18} className="mr-1" />
+              {lang === 'en' ? 'RU' : 'EN'}
+            </Button>
           </nav>
-          <Button variant="outline">Sign In</Button>
+          <Button variant="outline">{t.nav.signIn}</Button>
         </div>
       </header>
 
@@ -111,19 +340,19 @@ export default function Index() {
         <div className="container mx-auto text-center">
           <h1 className="text-6xl md:text-7xl font-bold mb-6 animate-fade-in">
             <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              AI Creator
+              {t.hero.title}
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 animate-fade-in">
-            AI-powered Image & 3D Model Generation for 3D Printing
+            {t.hero.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
             <Button size="lg" className="text-lg px-8 py-6 gradient-primary hover:opacity-90 transition-opacity">
               <Icon name="Sparkles" className="mr-2" size={20} />
-              Create Now
+              {t.hero.createNow}
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-6">
-              Sign In
+              {t.hero.signIn}
             </Button>
           </div>
           <div className="mt-16 relative">
@@ -132,19 +361,19 @@ export default function Index() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
                   <div className="text-3xl font-bold text-primary">1M+</div>
-                  <div className="text-sm text-muted-foreground">Images Created</div>
+                  <div className="text-sm text-muted-foreground">{t.hero.stats.images}</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-secondary">250K+</div>
-                  <div className="text-sm text-muted-foreground">3D Models</div>
+                  <div className="text-sm text-muted-foreground">{t.hero.stats.models}</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-accent">50K+</div>
-                  <div className="text-sm text-muted-foreground">Active Users</div>
+                  <div className="text-sm text-muted-foreground">{t.hero.stats.users}</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-muted-foreground">Support</div>
+                  <div className="text-sm text-muted-foreground">{t.hero.stats.support}</div>
                 </div>
               </div>
             </div>
@@ -163,7 +392,7 @@ export default function Index() {
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            Powerful <span className="text-primary">Features</span>
+            {t.features.title} <span className="text-primary">{t.features.titleAccent}</span>
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
@@ -172,10 +401,10 @@ export default function Index() {
                   <div className="w-16 h-16 mb-4 rounded-xl bg-gradient-primary flex items-center justify-center">
                     <Icon name={feature.icon} size={32} className="text-white" />
                   </div>
-                  <CardTitle className="text-2xl">{feature.title}</CardTitle>
+                  <CardTitle className="text-2xl">{t.features.items[index].title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base">{feature.description}</CardDescription>
+                  <CardDescription className="text-base">{t.features.items[index].description}</CardDescription>
                 </CardContent>
               </Card>
             ))}
@@ -186,7 +415,7 @@ export default function Index() {
       <section className="py-20 px-4 bg-card/30">
         <div className="container mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">
-            Export <span className="text-secondary">Formats</span>
+            {t.formats.title} <span className="text-secondary">{t.formats.titleAccent}</span>
           </h2>
           <div className="mb-12 flex justify-center gap-4">
             <img 
@@ -205,8 +434,8 @@ export default function Index() {
               <Card key={index} className="bg-card/50 backdrop-blur border-border">
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center gap-2">
-                    <Icon name={format.type === "3D Models" ? "Box" : "Image"} size={24} className="text-primary" />
-                    {format.type}
+                    <Icon name={index === 0 ? "Box" : "Image"} size={24} className="text-primary" />
+                    {index === 0 ? t.formats.models : t.formats.images}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -227,7 +456,7 @@ export default function Index() {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            <span className="text-accent">Coin</span> System
+            <span className="text-accent">{t.coins.title}</span> {t.coins.titleAccent}
           </h2>
           <Card className="bg-card/50 backdrop-blur border-border">
             <CardContent className="p-8">
@@ -235,45 +464,35 @@ export default function Index() {
                 <div>
                   <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
                     <Icon name="Coins" className="text-accent" size={28} />
-                    How it works
+                    {t.coins.howItWorks}
                   </h3>
                   <ul className="space-y-3 text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <Icon name="Check" className="text-primary mt-1" size={16} />
-                      <span>Purchase coins via credit card or cryptocurrency</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Icon name="Check" className="text-primary mt-1" size={16} />
-                      <span>Each generation costs coins based on complexity</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Icon name="Check" className="text-primary mt-1" size={16} />
-                      <span>Download generated content anytime</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Icon name="Check" className="text-primary mt-1" size={16} />
-                      <span>Unused coins never expire</span>
-                    </li>
+                    {t.coins.points.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <Icon name="Check" className="text-primary mt-1" size={16} />
+                        <span>{point}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold mb-4">Cost per generation</h3>
+                  <h3 className="text-2xl font-bold mb-4">{t.coins.costTitle}</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                      <span>Simple Image</span>
-                      <Badge>5 coins</Badge>
+                      <span>{t.coins.costs.simple}</span>
+                      <Badge>5 {t.pricing.coins}</Badge>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                      <span>HD Image</span>
-                      <Badge>15 coins</Badge>
+                      <span>{t.coins.costs.hd}</span>
+                      <Badge>15 {t.pricing.coins}</Badge>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                      <span>Basic 3D Model</span>
-                      <Badge>50 coins</Badge>
+                      <span>{t.coins.costs.basic}</span>
+                      <Badge>50 {t.pricing.coins}</Badge>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                      <span>Complex 3D Model</span>
-                      <Badge>100 coins</Badge>
+                      <span>{t.coins.costs.complex}</span>
+                      <Badge>100 {t.pricing.coins}</Badge>
                     </div>
                   </div>
                 </div>
@@ -286,7 +505,7 @@ export default function Index() {
       <section id="pricing" className="py-20 px-4 bg-card/30">
         <div className="container mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            Choose Your <span className="text-primary">Plan</span>
+            {t.pricing.title} <span className="text-primary">{t.pricing.titleAccent}</span>
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
@@ -298,23 +517,23 @@ export default function Index() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="gradient-primary px-4 py-1">Most Popular</Badge>
+                    <Badge className="gradient-primary px-4 py-1">{t.pricing.mostPopular}</Badge>
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <CardTitle className="text-2xl">{t.pricing.plans[index].name}</CardTitle>
                   <div className="mt-4">
                     <span className="text-5xl font-bold">${plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-muted-foreground">{t.pricing.perMonth}</span>
                   </div>
                   <CardDescription className="text-lg mt-2">
                     <Icon name="Coins" className="inline mr-1" size={16} />
-                    {plan.coins} coins
+                    {plan.coins} {t.pricing.coins}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {plan.features.map((feature, idx) => (
+                    {t.pricing.plans[index].features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Icon name="Check" className="text-primary mt-1" size={16} />
                         <span>{feature}</span>
@@ -325,7 +544,7 @@ export default function Index() {
                     className={`w-full mt-6 ${plan.popular ? "gradient-primary" : ""}`}
                     variant={plan.popular ? "default" : "outline"}
                   >
-                    Get Started
+                    {t.pricing.getStarted}
                   </Button>
                 </CardContent>
               </Card>
@@ -337,7 +556,7 @@ export default function Index() {
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            What <span className="text-accent">Users</span> Say
+            {t.testimonials.title} <span className="text-accent">{t.testimonials.titleAccent}</span> {t.testimonials.titleEnd}
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial, index) => (
@@ -348,11 +567,11 @@ export default function Index() {
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                      <div className="font-semibold">{t.testimonials.items[index].name}</div>
+                      <div className="text-sm text-muted-foreground">{t.testimonials.items[index].role}</div>
                     </div>
                   </div>
-                  <p className="text-muted-foreground italic">"{testimonial.content}"</p>
+                  <p className="text-muted-foreground italic">"{t.testimonials.items[index].content}"</p>
                 </CardContent>
               </Card>
             ))}
@@ -363,10 +582,10 @@ export default function Index() {
       <section id="faq" className="py-20 px-4 bg-card/30">
         <div className="container mx-auto max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            <span className="text-secondary">FAQ</span>
+            <span className="text-secondary">{t.faq.title}</span>
           </h2>
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
+            {t.faq.items.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="bg-card/50 backdrop-blur border border-border rounded-lg px-6">
                 <AccordionTrigger className="text-lg font-semibold hover:text-primary">
                   {faq.question}
@@ -386,30 +605,30 @@ export default function Index() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-primary rounded-lg"></div>
-                <span className="text-xl font-bold">AI Creator</span>
+                <span className="text-xl font-bold">{t.hero.title}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Next-generation AI platform for image and 3D model generation.
+                {t.footer.description}
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
+              <h3 className="font-semibold mb-4">{t.footer.product}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-primary transition-colors">Pricing</a></li>
-                <li><a href="#faq" className="hover:text-primary transition-colors">FAQ</a></li>
+                <li><a href="#features" className="hover:text-primary transition-colors">{t.nav.features}</a></li>
+                <li><a href="#pricing" className="hover:text-primary transition-colors">{t.nav.pricing}</a></li>
+                <li><a href="#faq" className="hover:text-primary transition-colors">{t.nav.faq}</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
+              <h3 className="font-semibold mb-4">{t.footer.legal}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Cookie Policy</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t.footer.privacy}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t.footer.terms}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t.footer.cookies}</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Contact</h3>
+              <h3 className="font-semibold mb-4">{t.footer.contact}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Icon name="Mail" size={16} />
@@ -427,7 +646,7 @@ export default function Index() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            © 2024 AI Creator. All rights reserved.
+            {t.footer.copyright}
           </div>
         </div>
       </footer>
