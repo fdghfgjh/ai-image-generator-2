@@ -13,7 +13,19 @@ const translations = {
       features: "Features",
       pricing: "Pricing",
       faq: "FAQ",
+      generator: "Generator",
       signIn: "Sign In"
+    },
+    generator: {
+      title: "AI Image",
+      titleAccent: "Generator",
+      subtitle: "Create stunning images from text prompts",
+      promptLabel: "Describe your image",
+      promptPlaceholder: "A futuristic city at sunset with flying cars...",
+      generateBtn: "Generate Image",
+      generating: "Generating...",
+      downloadBtn: "Download Image",
+      cost: "Cost: 5 coins"
     },
     hero: {
       title: "AI Creator",
@@ -150,7 +162,19 @@ const translations = {
       features: "Возможности",
       pricing: "Тарифы",
       faq: "FAQ",
+      generator: "Генератор",
       signIn: "Войти"
+    },
+    generator: {
+      title: "AI генератор",
+      titleAccent: "изображений",
+      subtitle: "Создавайте потрясающие изображения из текстовых описаний",
+      promptLabel: "Опишите ваше изображение",
+      promptPlaceholder: "Футуристический город на закате с летающими машинами...",
+      generateBtn: "Сгенерировать",
+      generating: "Генерирую...",
+      downloadBtn: "Скачать изображение",
+      cost: "Стоимость: 5 коинов"
     },
     hero: {
       title: "AI Creator",
@@ -286,7 +310,39 @@ const translations = {
 
 export default function Index() {
   const [lang, setLang] = useState<Language>('en');
+  const [prompt, setPrompt] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [generatedImage, setGeneratedImage] = useState<string>('');
   const t = translations[lang];
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      
+      const data = await response.json();
+      if (data.imageUrl) {
+        setGeneratedImage(data.imageUrl);
+      }
+    } catch (error) {
+      console.error('Generation failed:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = generatedImage;
+    link.download = 'ai-generated-image.jpg';
+    link.click();
+  };
   const features = [
     { icon: "ImagePlus" },
     { icon: "Box" },
@@ -319,6 +375,7 @@ export default function Index() {
             <span className="text-xl font-bold">{t.hero.title}</span>
           </div>
           <nav className="hidden md:flex gap-6 items-center">
+            <a href="#generator" className="hover:text-primary transition-colors">{t.nav.generator}</a>
             <a href="#features" className="hover:text-primary transition-colors">{t.nav.features}</a>
             <a href="#pricing" className="hover:text-primary transition-colors">{t.nav.pricing}</a>
             <a href="#faq" className="hover:text-primary transition-colors">{t.nav.faq}</a>
@@ -378,6 +435,78 @@ export default function Index() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="generator" className="py-20 px-4 bg-card/30">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
+            {t.generator.title} <span className="text-primary">{t.generator.titleAccent}</span>
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">{t.generator.subtitle}</p>
+          
+          <Card className="bg-card/50 backdrop-blur border-border">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div>
+                  <label className="text-sm font-semibold mb-2 block">{t.generator.promptLabel}</label>
+                  <textarea
+                    className="w-full h-32 px-4 py-3 bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    placeholder={t.generator.promptPlaceholder}
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-sm">
+                    <Icon name="Coins" size={14} className="mr-1" />
+                    {t.generator.cost}
+                  </Badge>
+                  <Button
+                    size="lg"
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !prompt.trim()}
+                    className="gradient-primary"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
+                        {t.generator.generating}
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Sparkles" size={20} className="mr-2" />
+                        {t.generator.generateBtn}
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {generatedImage && (
+                  <div className="mt-8 animate-fade-in">
+                    <div className="relative rounded-xl overflow-hidden border border-border">
+                      <img
+                        src={generatedImage}
+                        alt="Generated"
+                        className="w-full h-auto"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-center p-4">
+                        <Button
+                          variant="secondary"
+                          onClick={handleDownload}
+                          className="mb-2"
+                        >
+                          <Icon name="Download" size={18} className="mr-2" />
+                          {t.generator.downloadBtn}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
